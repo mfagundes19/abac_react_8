@@ -9,29 +9,98 @@ class FormSubmit extends React.Component {
         this.state = {
             contacts: [],
         };
-    }
 
+        let element = {
+            id:  1,
+            fullname: 'Marcelo Augusto',
+            age: '38',
+            gender: 'M'                
+        };
+        this.state = { 
+            contacts: [ 
+                ...this.state.contacts,
+                element
+            ] 
+        };
+
+        element = {
+            id:  2,
+            fullname: 'Marisvaldo Gomes',
+            age: '38',
+            gender: 'M'                
+        };
+        this.state = { 
+            contacts: [ 
+                ...this.state.contacts,
+                element
+            ] 
+        };
+        element = {
+            id:  3,
+            fullname: 'Ginostrêncio Gomes',
+            age: '38',
+            gender: 'M'                
+        };
+        this.state = { 
+            contacts: [ 
+                ...this.state.contacts,
+                element
+            ] 
+        };
+    }
     validateForm() {
         if(document.getElementById("fullname").value == "") {
             document.getElementById("fullname").style.borderColor = "red";
             alert('Você precisa informar um nome válido');
             return false;
         }
-        // if(document.getElementById("age").value == "") {
-        //     document.getElementById("age").style.borderColor = "red";
-        //     alert('Você precisa informar uma idade válida');
-        //     return false;
-        // }
-        // if(document.getElementById("gender_m").checked == false && document.getElementById("gender_f").checked == false) {
-        //     alert('Você precisa informar um gênero válido');
-        //     return false;
-        // }
+        if(document.getElementById("age").value == "") {
+            document.getElementById("age").style.borderColor = "red";
+            alert('Você precisa informar uma idade válida');
+            return false;
+        }
+        if(document.getElementById("gender_m").checked == false && document.getElementById("gender_f").checked == false) {
+            alert('Você precisa informar um gênero válido');
+            return false;
+        }
         return true;
     }
-
+    handleChangeOrder(event)  {
+        let ordernacao =  document.getElementById("ordernacao").value;
+        let arrList = [];
+        arrList = this.state.contacts;
+        switch(ordernacao) {
+            case 'crescente':
+                arrList.sort(function (a, b) {
+                    if (a.id > b.id) {
+                        return 1;
+                    }
+                    if (a.id < b.id) {
+                    return -1;
+                    }
+                    return 0;
+                });
+            break;
+            case 'decrescente':
+                arrList.sort(function (a, b) {
+                    if (a.id > b.id) {
+                        return -1;
+                    }
+                    if (a.id < b.id) {
+                    return 1;
+                    }
+                    return 0;
+                });
+            break;
+        }
+        this.setState({ 
+            contacts: arrList
+        });
+    }
     handleClick(event) {
         event.preventDefault();
         if(this.validateForm()) {
+            let ordernacao =  document.getElementById("ordernacao").value;
             let fullname = document.getElementById("fullname").value;
             let age = document.getElementById("age").value;
             let gender = "";
@@ -42,7 +111,7 @@ class FormSubmit extends React.Component {
                 gender = document.getElementById("gender_f").value;
             }
             let nextId = 1;
-            for(var i=0; i < this.state.contacts.lengh; i++) {
+            for(var i=0; i < this.state.contacts.length; i++) {
                 nextId++;
             } 
             let element = {
@@ -51,18 +120,25 @@ class FormSubmit extends React.Component {
                 age: age,
                 gender: gender                
             };
-            this.setState({ 
-                contacts: [ 
-                    ...this.state.contacts,
-                    element
-                ] 
-            });
+            if(ordernacao == "crescente") {
+                this.setState({ 
+                    contacts: [ 
+                        ...this.state.contacts,
+                        element
+                    ] 
+                });
+            } else {
+                this.setState({ 
+                    contacts: [ 
+                        element,
+                        ...this.state.contacts
+                    ] 
+                });
+            }
         }
     }   
     handleClickItem(event, index) {
         event.preventDefault();
-        // console.log(this.state.contacts[index]);
-        // console.log(this.state.contacts[index].fullname);
         if(index != undefined) {
             document.getElementById('modal_fullname').innerHTML = this.state.contacts[index].fullname;
             document.getElementById('modal_age').innerHTML = this.state.contacts[index].age;
@@ -94,6 +170,13 @@ class FormSubmit extends React.Component {
             <div>
                 <div>
                     <button type="submit" className="btn-submit" onClick={(event) => this.handleClick(event)}>Enviar</button>
+                </div>
+                <div><br></br></div>
+                <div>
+                    <select name="ordernacao" id="ordernacao" className="control-input" style={{marginBottom: '20px',width:'100%'}} onChange={((event) => this.handleChangeOrder(event))}>
+                        <option value="crescente">Ordernação Crescente</option>
+                        <option value="decrescente">Ordernação Decrescente</option>
+                    </select>
                 </div>
                 <table width='100%' cellPadding='3' cellspaccing='2' style={{marginTop: '20px',border: 'solid 1px #cdcdcd'}}>
                     <thead>
